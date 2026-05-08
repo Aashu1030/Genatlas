@@ -1,122 +1,103 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React, { useState, useCallback } from 'react'
+import axios from 'axios'
+import Header from './components/Header'
+import LandingHero from './components/LandingHero'
+import Dashboard from './components/Dashboard'
+import LoadingScreen from './components/LoadingScreen'
+import ErrorScreen from "./components/ErrorScreen.jsx";
+import AnnotationCard from './components/AnnotationCard'
+import  GeneOverview  from './components/GeneOverview'
+import  InterpretationCard  from './components/InterpretationCard'
+import  MutationChart  from './components/MutationChart'
+import  PapersPanel  from './components/PapersPanel'
+import  PopulationChart  from './components/PopulationChart'
+import  VariantTable  from './components/VariantTable'
 
-function App() {
-  const [count, setCount] = useState(0)
+
+
+export default function App() {
+  const [query, setQuery]         = useState('')
+  const [data, setData]           = useState(null)
+  const [loading, setLoading]     = useState(false)
+  const [error, setError]         = useState(null)
+  const [activeGene, setActiveGene] = useState(null)
+
+  const search = useCallback(async (geneName) => {
+    const name = (geneName || query).trim().toUpperCase()
+    if (!name) return
+
+    setLoading(true)
+    setError(null)
+    setData(null)
+    setActiveGene(name)
+    setQuery(name)
+
+    try {
+      const res = await axios.get(`/api/gene/${name}`, { timeout: 25000 })
+      setData(res.data)
+    } catch (err) {
+      const msg =
+        err.response?.data?.error ||
+        err.response?.data?.detail ||
+        (err.code === 'ECONNABORTED' ? 'Request timed out — the external APIs may be slow.' : err.message) ||
+        'Unknown error'
+      setError(msg)
+    } finally {
+      setLoading(false)
+    }
+  }, [query])
+
+  const handleQuick = (gene) => {
+    setQuery(gene)
+    search(gene)
+  }
+
+  const reset = () => {
+    setData(null)
+    setError(null)
+    setActiveGene(null)
+    setQuery('')
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header
+        query={query}
+        setQuery={setQuery}
+        onSearch={search}
+        onQuick={handleQuick}
+        onReset={reset}
+        loading={loading}
+        hasData={!!data}
+      />
 
-      <div className="ticks"></div>
+      <main style={{ flex: 1, padding: '0 24px 48px', maxWidth: 1520, margin: '0 auto', width: '100%' }}>
+        {!data && !loading && !error && (
+          <LandingHero onQuick={handleQuick} />
+        )}
+        {loading && <LoadingScreen gene={activeGene} />}
+        {error && !loading && (
+          <ErrorScreen message={error} gene={activeGene} onRetry={() => search(activeGene)} onBack={reset} />
+        )}
+        {data && !loading && (
+          <Dashboard data={data} />
+        )}
+      </main>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      <footer style={{
+        borderTop: '1px solid var(--border)',
+        padding: '14px 24px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        fontSize: 11,
+        color: 'var(--text-muted)',
+        fontFamily: 'var(--font-mono)',
+      }}>
+        <span>GeneAtlas v2.0</span>
+        <span>Ensembl · MyVariant.info · ClinVar · NCBI PubMed</span>
+        <span>GRCh38 / hg38</span>
+      </footer>
+    </div>
   )
 }
-
-export default App
