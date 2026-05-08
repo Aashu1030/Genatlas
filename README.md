@@ -62,6 +62,15 @@ GenAtlas is a modern, high-performance web application designed to search, proce
 4. **Access the Application:**
    Open your browser and navigate to the local URL provided by Vite (typically `http://localhost:5173`).
 
+### Using Docker
+
+You can easily run both the frontend and backend using Docker Compose:
+
+```bash
+docker-compose up --build
+```
+This will start the backend on port `3001` and the frontend (via Vite) on port `5173`. Navigate to `http://localhost:5173`.
+
 ## Usage
 
 1. Open the GenAtlas application in your browser.
