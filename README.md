@@ -1,7 +1,5 @@
 # GenAtlas
 
-![GenAtlas Header Image](https://via.placeholder.com/1200x300?text=GenAtlas+-+Genomic+Interface)
-
 GenAtlas is a modern, high-performance web application designed to search, process, and display comprehensive genomic data. Providing an intuitive interface for exploring gene variants, associations, sequences, and scholarly papers, GenAtlas serves as a powerful dashboard for bioinformaticians and genetics researchers.
 
 ## Features
@@ -11,7 +9,7 @@ GenAtlas is a modern, high-performance web application designed to search, proce
 - **Sequence Intelligence**: GC content calculations and base composition visualizations.
 - **Disease Associations**: Information on related phenotypes and conditions.
 - **Research Literature**: Direct integrations with NCBI PubMed to source relevant academic papers.
-- **Modern UI/UX**: Built with React, Tailwind CSS, and Framer Motion for a fluid, dark-mode first design aesthetic.
+- **Modern UI/UX**: Built with React, Tailwind CSS, and Framer Motion for a fluid design.
 
 ## Tech Stack
 
@@ -36,8 +34,8 @@ GenAtlas is a modern, high-performance web application designed to search, proce
 
 1. **Clone the repository:**
    ```bash
-   git clone <repository-url>
-   cd GenAtlas
+   git clone https://github.com/subodh-baniya/Genatlas.git
+   cd Genatlas
    ```
 
 2. **Backend Setup:**
@@ -105,4 +103,4 @@ GenAtlas/
 
 ## License
 
-This project is licensed under the ISC License.
+This project is licensed under the MIT License.
