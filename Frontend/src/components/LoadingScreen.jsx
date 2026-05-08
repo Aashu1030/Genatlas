@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
 
 const STEPS = [
-  { label: 'Gene lookup', detail: 'Ensembl REST API → /lookup/symbol' },
-  { label: 'Region variants', detail: 'Ensembl → /overlap/region' },
-  { label: 'Clinical annotation', detail: 'MyVariant.info → ClinVar' },
-  { label: 'Population frequencies', detail: 'Ensembl → /variation/human' },
-  { label: 'Research papers', detail: 'NCBI → esearch + esummary' },
-  { label: 'Risk interpretation', detail: 'Rule-based analysis engine' },
+  { label: 'Gene lookup', detail: 'Ensembl REST API → /lookup/symbol', icon: '🔍' },
+  { label: 'Variant overlap', detail: 'Ensembl → /overlap/id?feature=variation', icon: '🧬' },
+  { label: 'DNA sequence', detail: 'Ensembl → /sequence/id', icon: '🔗' },
+  { label: 'Mutation statistics', detail: 'Variant class aggregation', icon: '📊' },
+  { label: 'Research papers', detail: 'NCBI PubMed → esearch + esummary', icon: '📄' },
+  { label: 'Disease relevance', detail: 'Keyword signals from metadata', icon: '🏥' },
 ]
 
 export default function LoadingScreen({ gene }) {
@@ -19,6 +19,8 @@ export default function LoadingScreen({ gene }) {
     return () => clearInterval(interval)
   }, [])
 
+  const progress = ((step + 1) / STEPS.length) * 100
+
   return (
     <div className="anim-in" style={{
       display: 'flex',
@@ -26,20 +28,34 @@ export default function LoadingScreen({ gene }) {
       alignItems: 'center',
       justifyContent: 'center',
       minHeight: '65vh',
-      gap: 48,
+      gap: 40,
     }}>
       {/* Gene name */}
       <div style={{ textAlign: 'center' }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', letterSpacing: '0.12em', marginBottom: 10 }}>
-          ANALYZING
-        </div>
-        <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 52, color: 'var(--accent)', letterSpacing: '-0.03em', lineHeight: 1 }}>
+        <div className="ga-kicker" style={{ marginBottom: 12 }}>ANALYZING</div>
+        <div style={{
+          fontFamily: 'var(--font-display)',
+          fontWeight: 800,
+          fontSize: 56,
+          lineHeight: 1,
+          letterSpacing: '-0.04em',
+        }}
+        className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"
+        >
           {gene}
         </div>
       </div>
 
-      {/* Pipeline steps */}
+      {/* Progress bar */}
       <div style={{ width: '100%', maxWidth: 440 }}>
+        <div className="h-1 bg-slate-100 rounded-full overflow-hidden border border-slate-200/50 mb-6">
+          <div
+            className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-700 ease-out"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+
+        {/* Pipeline steps */}
         {STEPS.map((s, i) => {
           const done = i < step
           const active = i === step
@@ -48,21 +64,29 @@ export default function LoadingScreen({ gene }) {
               display: 'flex',
               alignItems: 'center',
               gap: 14,
-              padding: '10px 0',
-              borderBottom: i < STEPS.length - 1 ? '1px solid var(--border)' : 'none',
+              padding: '10px 12px',
+              borderRadius: 12,
+              marginBottom: 2,
               opacity: i > step ? 0.3 : 1,
-              transition: 'opacity 0.4s ease',
+              background: active ? 'rgba(59,130,246,0.04)' : 'transparent',
+              transition: 'all 0.4s ease',
             }}>
-              {/* Status dot */}
-              <div style={{
-                width: 8, height: 8,
-                borderRadius: '50%',
-                flexShrink: 0,
-                background: done ? 'var(--accent)' : active ? 'var(--accent)' : 'var(--border-light)',
-                boxShadow: active ? '0 0 8px rgba(37,99,235,0.4)' : 'none',
-                transition: 'all 0.3s ease',
-                animation: active ? 'pulse 1.5s ease-in-out infinite' : 'none',
-              }} />
+              {/* Status icon */}
+              {done ? (
+                <div className="size-6 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center shrink-0">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M3 6L5.2 8.2L9 4" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              ) : active ? (
+                <div className="size-6 rounded-lg bg-blue-100 border border-blue-300 flex items-center justify-center shrink-0">
+                  <div className="size-2 rounded-full bg-blue-500" style={{ animation: 'pulse 1.5s ease-in-out infinite' }} />
+                </div>
+              ) : (
+                <div className="size-6 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0">
+                  <div className="size-1.5 rounded-full bg-slate-300" />
+                </div>
+              )}
 
               <div style={{ flex: 1 }}>
                 <div style={{
@@ -73,17 +97,17 @@ export default function LoadingScreen({ gene }) {
                 }}>
                   {s.label}
                 </div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>
+                <div className="font-mono text-[10px] text-slate-400 mt-0.5">
                   {s.detail}
                 </div>
               </div>
 
-              {/* Checkmark */}
+              {/* Duration indicator for completed */}
               {done && (
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <circle cx="7" cy="7" r="6.5" fill="rgba(37,99,235,0.1)" stroke="rgba(37,99,235,0.25)"/>
-                  <path d="M4.5 7L6.2 8.8L9.5 5.5" stroke="var(--accent)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+                <span className="font-mono text-[9px] text-blue-400">done</span>
+              )}
+              {active && (
+                <span className="dot-pulse" style={{ display: 'flex', gap: 3 }}><span/><span/><span/></span>
               )}
             </div>
           )
@@ -93,7 +117,7 @@ export default function LoadingScreen({ gene }) {
       <style>{`
         @keyframes pulse {
           0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.6; transform: scale(0.8); }
+          50% { opacity: 0.5; transform: scale(0.7); }
         }
       `}</style>
     </div>

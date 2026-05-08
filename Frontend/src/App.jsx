@@ -4,98 +4,116 @@ import Header from './components/Header'
 import LandingHero from './components/LandingHero'
 import Dashboard from './components/Dashboard'
 import LoadingScreen from './components/LoadingScreen'
-import ErrorScreen from "./components/ErrorScreen.jsx";
-import AnnotationCard from './components/AnnotationCard'
-import  GeneOverview  from './components/GeneOverview'
-import  InterpretationCard  from './components/InterpretationCard'
-import  MutationChart  from './components/MutationChart'
-import  PapersPanel  from './components/PapersPanel'
-import  PopulationChart  from './components/PopulationChart'
-import  VariantTable  from './components/VariantTable'
+import ErrorScreen from './components/ErrorScreen'
 
+const API = '/api'
 
+function normalizeReport(r) {
+  const gene = r?.gene || {}
+  const variants = r?.variants || {}
+  const seq = r?.sequence || {}
+  const typeDistribution = {
+    snp: 0,
+    insertion: 0,
+    deletion: 0,
+    substitution: 0,
+    unknown: 0,
+    ...(variants.typeDistribution || {}),
+  }
+  const consequenceDistribution = {
+    ...(variants.consequenceDistribution || {}),
+  }
+
+  const topVariants = Array.isArray(variants.topVariants) ? variants.topVariants : []
+
+  return {
+    gene: {
+      name: gene.name || '',
+      id: gene.id || '',
+      description: gene.description || '',
+      chromosome: gene.chromosome || '',
+      start: gene.start || 0,
+      end: gene.end || 0,
+      strand: gene.strand ?? 0,
+      biotype: gene.biotype || '',
+      assembly: gene.assembly || 'GRCh38',
+    },
+    sequence: {
+      length: seq.length || 0,
+      gcContent: seq.gcContent ?? 0,
+      baseComposition: seq.baseComposition || { A: 0, T: 0, G: 0, C: 0 },
+      snippet: seq.snippet || '',
+    },
+    variants: {
+      totalVariants: variants.totalVariants || Object.values(typeDistribution).reduce((sum, v) => sum + Number(v || 0), 0),
+      snpCount: variants.snpCount || typeDistribution.snp || 0,
+      insertionCount: variants.insertionCount || typeDistribution.insertion || 0,
+      deletionCount: variants.deletionCount || typeDistribution.deletion || 0,
+      typeDistribution,
+      consequenceDistribution,
+      topVariants,
+    },
+    diseaseAssociations: Array.isArray(r?.diseaseAssociations) ? r.diseaseAssociations : [],
+    researchPapers: Array.isArray(r?.researchPapers) ? r.researchPapers : [],
+  }
+}
 
 export default function App() {
-  const [query, setQuery]         = useState('')
-  const [data, setData]           = useState(null)
-  const [loading, setLoading]     = useState(false)
-  const [error, setError]         = useState(null)
+  const [query, setQuery]           = useState('')
+  const [data, setData]             = useState(null)
+  const [loading, setLoading]       = useState(false)
+  const [error, setError]           = useState(null)
   const [activeGene, setActiveGene] = useState(null)
 
   const search = useCallback(async (geneName) => {
     const name = (geneName || query).trim().toUpperCase()
     if (!name) return
-
-    setLoading(true)
-    setError(null)
-    setData(null)
-    setActiveGene(name)
-    setQuery(name)
+    setLoading(true); setError(null); setData(null)
+    setActiveGene(name); setQuery(name)
 
     try {
-      const res = await axios.get(`/api/gene/${name}`, { timeout: 25000 })
-      setData(res.data)
+      const reportRes = await axios.get(`${API}/report/${name}`, { timeout: 120000 })
+      setData(normalizeReport(reportRes.data))
     } catch (err) {
-      const msg =
-        err.response?.data?.error ||
-        err.response?.data?.detail ||
-        (err.code === 'ECONNABORTED' ? 'Request timed out — the external APIs may be slow.' : err.message) ||
+      setError(
+        err.response?.data?.message ||
+        err.response?.data?.error   ||
+        (err.code === 'ECONNABORTED' ? 'Request timed out — make sure the backend is running on port 3001.' : err.message) ||
         'Unknown error'
-      setError(msg)
+      )
     } finally {
       setLoading(false)
     }
   }, [query])
 
-  const handleQuick = (gene) => {
-    setQuery(gene)
-    search(gene)
-  }
-
-  const reset = () => {
-    setData(null)
-    setError(null)
-    setActiveGene(null)
-    setQuery('')
-  }
+  const handleQuick = (g) => { setQuery(g); search(g) }
+  const reset = () => { setData(null); setError(null); setActiveGene(null); setQuery('') }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Header
-        query={query}
-        setQuery={setQuery}
-        onSearch={search}
-        onQuick={handleQuick}
-        onReset={reset}
-        loading={loading}
-        hasData={!!data}
-      />
-
-      <main style={{ flex: 1, padding: '0 24px 48px', maxWidth: 1520, margin: '0 auto', width: '100%' }}>
-        {!data && !loading && !error && (
-          <LandingHero onQuick={handleQuick} />
-        )}
+    <div className="ga-shell" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Header query={query} setQuery={setQuery} onSearch={search} onQuick={handleQuick} onReset={reset} loading={loading} hasData={!!data} />
+      <main className="ga-container" style={{ flex: 1, padding: '24px 0 48px' }}>
+        {!data && !loading && !error && <LandingHero onQuick={handleQuick} />}
         {loading && <LoadingScreen gene={activeGene} />}
-        {error && !loading && (
-          <ErrorScreen message={error} gene={activeGene} onRetry={() => search(activeGene)} onBack={reset} />
-        )}
-        {data && !loading && (
-          <Dashboard data={data} />
-        )}
+        {error && !loading && <ErrorScreen message={error} gene={activeGene} onRetry={() => search(activeGene)} onBack={reset} />}
+        {data && !loading && <Dashboard data={data} />}
       </main>
-
-      <footer style={{
+      <footer className="ga-container" style={{
         borderTop: '1px solid var(--border)',
-        padding: '14px 24px',
+        padding: '16px 0',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        fontSize: 11,
+        fontSize: 10,
         color: 'var(--text-muted)',
         fontFamily: 'var(--font-mono)',
+        letterSpacing: '0.05em',
       }}>
-        <span>GeneAtlas v2.0</span>
-        <span>Ensembl · MyVariant.info · ClinVar · NCBI PubMed</span>
+        <span className="flex items-center gap-2">
+          <span className="size-1.5 rounded-full bg-green-400"></span>
+          GeneAtlas v2.0
+        </span>
+        <span>Ensembl · NCBI PubMed</span>
         <span>GRCh38 / hg38</span>
       </footer>
     </div>
