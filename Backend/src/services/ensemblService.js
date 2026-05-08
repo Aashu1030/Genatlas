@@ -6,7 +6,6 @@ const headers = {
   "Content-Type": "application/json"
 };
 
-// reusable function
 export const getGeneBySymbol = async (symbol) => {
   const response = await axios.get(
     `${BASE_URL}/lookup/symbol/homo_sapiens/${symbol}`,
