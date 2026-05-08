@@ -2,62 +2,37 @@ import React from 'react'
 
 export default function PapersPanel({ papers }) {
   return (
-    <div className="card" style={{ padding: '20px', height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+    <section className="ga-card ga-card-hover p-6 h-full flex flex-col">
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', letterSpacing: '0.1em', marginBottom: 4 }}>RESEARCH PAPERS</div>
-          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 14, color: 'var(--text)' }}>PubMed</div>
+          <div className="ga-kicker mb-1">RESEARCH PAPERS</div>
+          <div className="font-display font-semibold text-[15px] text-slate-900">PubMed Literature</div>
         </div>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)' }}>{papers?.length || 0}</span>
+        <span className="font-mono text-[10px] text-blue-600 bg-blue-50 border border-blue-200 rounded-full px-2.5 py-1">{papers?.length || 0} results</span>
       </div>
 
       {papers && papers.length > 0 ? (
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 0 }}>
+        <div className="flex-1 flex flex-col">
           {papers.map((p, i) => (
             <a
-              key={p.id}
+              key={p.pmid || i}
               href={p.url}
               target="_blank"
               rel="noopener noreferrer"
-              style={{
-                display: 'block',
-                padding: '12px 0',
-                borderBottom: i < papers.length - 1 ? '1px solid var(--border)' : 'none',
-                textDecoration: 'none',
-                transition: 'opacity 0.15s',
-              }}
-              onMouseEnter={e => e.currentTarget.style.opacity = '0.75'}
-              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+              className="group block py-3.5 border-b border-slate-100 last:border-b-0 hover:bg-blue-50/40 rounded-xl px-3 -mx-3 transition-all"
             >
-              <div style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: 12,
-                color: 'var(--text)',
-                lineHeight: 1.5,
-                marginBottom: 6,
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-              }}>
+              <div className="font-body text-[12px] text-slate-800 leading-6 mb-1.5 line-clamp-2 group-hover:text-blue-800 transition-colors">
                 {p.title}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                {p.pubdate && (
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)' }}>{p.pubdate}</span>
+              <div className="flex items-center gap-2 flex-wrap">
+                {p.pubDate && (
+                  <span className="font-mono text-[10px] text-slate-500">{p.pubDate}</span>
                 )}
-                {p.source && (
-                  <span style={{
-                    fontFamily: 'var(--font-mono)', fontSize: 9,
-                    color: 'var(--accent)',
-                    padding: '2px 7px',
-                    background: 'rgba(37,99,235,0.06)',
-                    border: '1px solid rgba(37,99,235,0.1)',
-                    borderRadius: 4,
-                  }}>{p.source}</span>
+                {p.journal && (
+                  <span className="font-mono text-[9px] text-blue-700 px-2 py-0.5 bg-blue-50 border border-blue-200/70 rounded-md">{p.journal}</span>
                 )}
                 {p.authors && p.authors.length > 0 && (
-                  <span style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--text-muted)' }}>
+                  <span className="font-body text-[10px] text-slate-400">
                     {p.authors.slice(0, 2).join(', ')}{p.authors.length > 2 ? ' et al.' : ''}
                   </span>
                 )}
@@ -66,18 +41,23 @@ export default function PapersPanel({ papers }) {
           ))}
         </div>
       ) : (
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-            <rect x="4" y="3" width="16" height="22" rx="2" stroke="var(--border-light)" strokeWidth="1.2"/>
-            <path d="M8 9h8M8 13h8M8 17h5" stroke="var(--border-light)" strokeWidth="1" strokeLinecap="round"/>
-          </svg>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)' }}>No papers found</span>
+        <div className="flex-1 flex flex-col items-center justify-center gap-3 py-8">
+          <div className="size-12 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <rect x="3" y="2" width="12" height="18" rx="2" stroke="#cbd5e1" strokeWidth="1.2"/>
+              <path d="M6 7h6M6 10h6M6 13h4" stroke="#cbd5e1" strokeWidth="1" strokeLinecap="round"/>
+            </svg>
+          </div>
+          <span className="font-mono text-[11px] text-slate-400">No papers found</span>
         </div>
       )}
 
-      <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--border)' }}>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)' }}>Source: NCBI PubMed E-utilities</span>
+      <div className="mt-4 pt-4 border-t border-slate-100">
+        <div className="flex items-center gap-2">
+          <div className="size-1.5 rounded-full bg-green-400"></div>
+          <span className="font-mono text-[9px] text-slate-400">Source: NCBI PubMed E-utilities</span>
+        </div>
       </div>
-    </div>
+    </section>
   )
 }
