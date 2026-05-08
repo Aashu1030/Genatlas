@@ -2,6 +2,10 @@
 
 GenAtlas is a modern, high-performance web application designed to search, process, and display comprehensive genomic data. Providing an intuitive interface for exploring gene variants, associations, sequences, and scholarly papers, GenAtlas serves as a powerful dashboard for bioinformaticians and genetics researchers.
 
+## Demo
+
+
+
 ## Features
 
 - **Gene Overview**: Quick insights into gene characteristics, biotypes, locations, and assembly metrics (GRCh38 / hg38).
