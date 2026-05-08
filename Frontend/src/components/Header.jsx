@@ -3,138 +3,70 @@ import React from 'react'
 const QUICK = ['BRCA1', 'TP53', 'EGFR', 'APOE']
 
 const DNAIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-    <path d="M5 2.5C5 2.5 7 5 9 5C11 5 13 2.5 13 2.5" stroke="#2563eb" strokeWidth="1.3" strokeLinecap="round"/>
-    <path d="M5 15.5C5 15.5 7 13 9 13C11 13 13 15.5 13 15.5" stroke="#2563eb" strokeWidth="1.3" strokeLinecap="round"/>
-    <path d="M5 2.5V15.5M13 2.5V15.5" stroke="#2563eb" strokeWidth="1" strokeOpacity="0.35"/>
-    <line x1="5" y1="7" x2="13" y2="7" stroke="#2563eb" strokeWidth="1.1" strokeOpacity="0.6"/>
-    <line x1="5" y1="9" x2="13" y2="9" stroke="#2563eb" strokeWidth="1.1" strokeOpacity="0.9"/>
-    <line x1="5" y1="11" x2="13" y2="11" stroke="#2563eb" strokeWidth="1.1" strokeOpacity="0.6"/>
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <path d="M5 2.5C5 2.5 7.5 5.5 10 5.5C12.5 5.5 15 2.5 15 2.5" stroke="#3b82f6" strokeWidth="1.4" strokeLinecap="round"/>
+    <path d="M5 17.5C5 17.5 7.5 14.5 10 14.5C12.5 14.5 15 17.5 15 17.5" stroke="#3b82f6" strokeWidth="1.4" strokeLinecap="round"/>
+    <path d="M5 2.5V17.5M15 2.5V17.5" stroke="#3b82f6" strokeWidth="1" strokeOpacity="0.25"/>
+    <line x1="5" y1="7.5" x2="15" y2="7.5" stroke="#3b82f6" strokeWidth="1.1" strokeOpacity="0.4"/>
+    <line x1="5" y1="10" x2="15" y2="10" stroke="#3b82f6" strokeWidth="1.1" strokeOpacity="0.7"/>
+    <line x1="5" y1="12.5" x2="15" y2="12.5" stroke="#3b82f6" strokeWidth="1.1" strokeOpacity="0.4"/>
   </svg>
 )
 
 const SearchIcon = () => (
-  <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-    <circle cx="5.5" cy="5.5" r="4.2" stroke="currentColor" strokeWidth="1.3"/>
-    <path d="M8.5 8.5L11.5 11.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+    <circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.3"/>
+    <path d="M9.5 9.5L12.5 12.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
   </svg>
 )
 
-export default function Header({ query, setQuery, onSearch, onQuick, onReset, loading, hasData }) {
+export default function Header({ query, setQuery, onSearch, onQuick, onReset, loading }) {
   return (
-    <header style={{
-      position: 'sticky', top: 0, zIndex: 100,
-      borderBottom: '1px solid var(--border)',
-      background: 'rgba(255,255,255,0.92)',
-      backdropFilter: 'blur(16px)',
-      WebkitBackdropFilter: 'blur(16px)',
-    }}>
-      <div style={{
-        maxWidth: 1520, margin: '0 auto',
-        padding: '0 24px',
-        height: 60,
-        display: 'flex', alignItems: 'center', gap: 32,
-      }}>
+    <header className="sticky top-0 z-[100] border-b border-slate-200/80 bg-white/75 backdrop-blur-xl backdrop-saturate-150">
+      <div className="ga-container h-[60px] flex items-center gap-5">
         {/* Logo */}
-        <button
-          onClick={onReset}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 10,
-            background: 'none', border: 'none', cursor: 'pointer',
-            padding: 0, flexShrink: 0,
-          }}
-        >
-          <div style={{
-            width: 32, height: 32,
-            border: '1px solid rgba(37,99,235,0.2)',
-            borderRadius: 8,
-            background: 'rgba(37,99,235,0.06)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
+        <button onClick={onReset} className="flex items-center gap-2.5 bg-transparent border-0 p-0 cursor-pointer shrink-0 group">
+          <div className="size-9 rounded-xl border border-blue-200/80 bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center group-hover:border-blue-300 group-hover:shadow-md group-hover:shadow-blue-100 transition-all duration-300">
             <DNAIcon />
           </div>
           <div>
-            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15, color: 'var(--text)', letterSpacing: '-0.02em', lineHeight: 1 }}>
-              GeneAtlas
-            </div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--text-muted)', letterSpacing: '0.1em', marginTop: 2 }}>
-              GENOMIC INTELLIGENCE
-            </div>
+            <div className="font-display font-bold text-[14px] text-slate-900 leading-none tracking-[-0.02em] group-hover:text-blue-700 transition-colors">GeneAtlas</div>
+            <div className="font-mono text-[8px] text-slate-400 tracking-[0.14em] mt-0.5">GENOMIC INTELLIGENCE</div>
           </div>
         </button>
 
         {/* Search */}
-        <div style={{ flex: 1, maxWidth: 440, position: 'relative' }}>
-          <div style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }}>
+        <div className="flex-1 max-w-[480px] relative">
+          <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
             <SearchIcon />
           </div>
           <input
             value={query}
             onChange={e => setQuery(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && onSearch()}
-            placeholder="Gene symbol — BRCA1, TP53, EGFR…"
-            style={{
-              width: '100%',
-              background: 'var(--surface-2)',
-              border: '1px solid var(--border)',
-              borderRadius: 8,
-              padding: '8px 90px 8px 34px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 12,
-              color: 'var(--text)',
-              outline: 'none',
-              transition: 'border-color 0.2s',
-            }}
-            onFocus={e => e.target.style.borderColor = 'rgba(37,99,235,0.4)'}
-            onBlur={e => e.target.style.borderColor = 'var(--border)'}
+            placeholder="Search gene symbol — BRCA1, TP53, EGFR…"
+            className="w-full rounded-xl border border-slate-200 bg-white/90 pl-10 pr-24 py-2.5 font-mono text-[12px] text-slate-800 placeholder:text-slate-400 outline-none focus:ring-4 focus:ring-blue-100/80 focus:border-blue-300 transition-all"
           />
           <button
             onClick={() => onSearch()}
             disabled={loading || !query.trim()}
-            style={{
-              position: 'absolute', right: 6, top: '50%', transform: 'translateY(-50%)',
-              padding: '4px 12px',
-              background: loading ? 'rgba(37,99,235,0.08)' : 'rgba(37,99,235,0.1)',
-              border: '1px solid rgba(37,99,235,0.2)',
-              borderRadius: 5,
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-              color: 'var(--accent)',
-              cursor: loading || !query.trim() ? 'not-allowed' : 'pointer',
-              opacity: !query.trim() ? 0.5 : 1,
-              transition: 'background 0.2s',
-              whiteSpace: 'nowrap',
-            }}
+            className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-lg bg-blue-600 px-4 py-1.5 font-mono text-[11px] text-white font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-blue-700 active:scale-95 transition-all shadow-sm shadow-blue-200"
           >
             {loading ? (
-              <span className="dot-pulse" style={{ display: 'flex', gap: 3 }}>
-                <span/><span/><span/>
-              </span>
+              <span className="dot-pulse" style={{ display: 'flex', gap: 3 }}><span/><span/><span/></span>
             ) : 'Analyze'}
           </button>
         </div>
 
         {/* Quick genes */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', marginRight: 4 }}>QUICK</span>
+        <div className="hidden lg:flex items-center gap-1.5 shrink-0">
+          <span className="font-mono text-[9px] text-slate-400 mr-1 tracking-[0.1em]">QUICK</span>
           {QUICK.map(g => (
             <button
               key={g}
               onClick={() => onQuick(g)}
               disabled={loading}
-              style={{
-                padding: '4px 10px',
-                background: 'transparent',
-                border: '1px solid var(--border)',
-                borderRadius: 5,
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                color: 'var(--text-dim)',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                transition: 'all 0.15s',
-              }}
-              onMouseEnter={e => { e.target.style.borderColor = 'rgba(37,99,235,0.35)'; e.target.style.color = 'var(--accent)' }}
-              onMouseLeave={e => { e.target.style.borderColor = 'var(--border)'; e.target.style.color = 'var(--text-dim)' }}
+              className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white font-mono text-[10px] text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 transition-all"
             >{g}</button>
           ))}
         </div>
