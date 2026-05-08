@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(urlencoded({extended: true}));
 
 
-import geneRoutes from "./routes/geneRoutes.js";
+import geneRoutes from "./routes/gene.route.js";
 app.use("/api/gene", geneRoutes);
 
 
