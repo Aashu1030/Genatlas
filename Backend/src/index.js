@@ -10,9 +10,8 @@ app.use(express.json());
 app.use(urlencoded({extended: true}));
 
 
-import geneRoutes from "./routes/gene.route.js";
-app.use("/api/gene", geneRoutes);
-
+import reportRoutes from "./Routes/report.route.js";
+app.use("/api", reportRoutes);
 
 const PORT = process.env.PORT || 3001;
 
